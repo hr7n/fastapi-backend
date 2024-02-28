@@ -31,3 +31,4 @@ MANIFEST
 .env.local
 .vscode/
 .DS_Store
+userloans.db
