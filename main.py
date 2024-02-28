@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from sqlmodel import SQLModel
-from database import engine
+from database import engine, SQLModel
 from models import User, Loan
 
 app = FastAPI()
