@@ -40,6 +40,16 @@ def update_user(user_id: int, user_update: User, db: Session = Depends(get_sessi
         return db_user
 
 
+@app.delete("/users/{user_id}", response_model=User)
+def delete_user(user_id: int, db: Session = Depends(get_session)):
+    db_user = db.get(User, user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(db_user)
+    db.commit()
+    return db_user
+
+
 def create_db():
     SQLModel.metadata.create_all(engine)
 
