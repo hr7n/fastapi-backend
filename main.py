@@ -10,6 +10,8 @@ app = FastAPI()
 # async def read_root():
 #     return {"message": "Test"}
 
+## Users
+
 
 @app.post("/users/", response_model=User)
 def create_user(user: User, db: Session = Depends(get_session)):
@@ -48,6 +50,25 @@ def delete_user(user_id: int, db: Session = Depends(get_session)):
     db.delete(db_user)
     db.commit()
     return db_user
+
+
+## Loans
+
+
+@app.get("/loans/{loan_id}", response_model=Loan)
+def read_loan(loan_id: int, db: Session = Depends(get_session)):
+    loan = db.get(Loan, loan_id)
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+    return loan
+
+
+@app.post("/loans/", response_model=Loan)
+def create_loan(loan: Loan, db: Session = Depends(get_session)):
+    db.add(loan)
+    db.commit()
+    db.refresh(loan)
+    return loan
 
 
 def create_db():
