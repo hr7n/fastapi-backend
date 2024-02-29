@@ -27,6 +27,19 @@ def read_user(user_id: int, db: Session = Depends(get_session)):
     return user
 
 
+@app.put("/users/{user_id}", response_model=User)
+def update_user(user_id: int, user_update: User, db: Session = Depends(get_session)):
+    db_user = db.get(User, user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_data = user_update.dict(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(db_user, key, value)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+
+
 def create_db():
     SQLModel.metadata.create_all(engine)
 
