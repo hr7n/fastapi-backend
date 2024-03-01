@@ -55,19 +55,19 @@ def delete_user(user_id: int, db: Session = Depends(get_session)):
 ## Loans
 
 
-@app.get("/loans/{loan_id}", response_model=Loan)
-def read_loan(loan_id: int, db: Session = Depends(get_session)):
-    loan = db.get(Loan, loan_id)
-    if not loan:
-        raise HTTPException(status_code=404, detail="Loan not found")
-    return loan
-
-
 @app.post("/loans/", response_model=Loan)
 def create_loan(loan: Loan, db: Session = Depends(get_session)):
     db.add(loan)
     db.commit()
     db.refresh(loan)
+    return loan
+
+
+@app.get("/loans/{loan_id}", response_model=Loan)
+def read_loan(loan_id: int, db: Session = Depends(get_session)):
+    loan = db.get(Loan, loan_id)
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
     return loan
 
 
