@@ -38,6 +38,8 @@ Additional endpoints:
   - This test verifies the calculate_monthly_payment function. It uses predefined test cases that include loan amounts, annual interest rates, loan terms (in months), and the expected monthly payment.
 - `test_loan_schedule:`
   - This test checks the loan_schedule function, ensuring it correctly generates a complete amortization schedule for a given loan. It validates that the schedule's length matches the loan term, the first month's details are accurate, and the loan is fully paid off by the last month. The test also confirms that the monthly payment and remaining balance calculations align with expectations derived from the numpy_financial.pmt function.
+- `test_loan_summary:`
+  - This test evaluates the loan_summary function, ensuring it accurately calculates and returns a summary of the loan's status at a specified month. It tests against predefined scenarios that include the loan amount, annual interest rate, loan term in months, and a specific month for which the summary is requested. The expected outcomes for the current principal balance, total principal paid, and total interest paid are compared against the function's output. This test confirms that the function provides precise financial information crucial for monitoring loan repayment progress.
 
 ## Questions
 
