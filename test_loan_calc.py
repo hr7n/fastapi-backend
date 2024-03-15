@@ -29,15 +29,15 @@ def test_loan_schedule():
 
     first_month = schedule[0]
 
-    assert first_month["month"] == 1, "First month should be 1"
+    assert first_month.month == 1, "First month should be 1"
     assert (
-        first_month["monthly_payment"] == expected_monthly_pmt
+        first_month.monthly_payment == expected_monthly_pmt
     ), "Monthly payment different than expected"
     assert (
-        first_month["remaining_balance"] < amount
+        first_month.remaining_balance < amount
     ), "Remaining balance should be less than principal"
 
     last_month = schedule[-1]
     assert (
-        last_month["remaining_balance"] == 0.0
+        last_month.remaining_balance == 0.0
     ), "Loan should be fully paid off by last month"
