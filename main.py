@@ -102,6 +102,13 @@ def get_loan_summary(month: int, loan_id: int, db: Session = Depends(get_session
         raise HTTPException(status_code=400, detail=str(err))
     return summary
 
+@app.get('/users/{user_id}/loans', response_model=List[Loan])
+def get_user_loans(user_id: int, db: Session = Depends(get_session)):
+    user = db.get(User, user_id)
+    if not user: 
+        raise HTTPException(status_code=404, detail="User not found")
+    return user.loans
+
 
 
 def create_db():
