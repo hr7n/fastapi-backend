@@ -129,6 +129,15 @@ def share_loan_with_user(loan_id: int, user_id: int, db: Session = Depends(get_s
 
     return {"message": "Loan shared successfully"}
 
+@app.get('/loans/{loan_id}/users', response_model=List[User])
+def get_users_for_loan(loan_id: int, db: Session = Depends(get_session)):
+    loan = db.get(Loan, loan_id)
+    if not loan: raise HTTPException(status_code=404, detail="Loan not found")
+
+    user_links = db.query(UserLoanLink).filter(UserLoanLink.loan_id == loan.id).all()
+    user_ids = [link.user_id for link in user_links]
+    users = db.query(User).filter(User.id.in_(user_ids)).all()
+    return users
 
 def create_db():
     SQLModel.metadata.create_all(engine)
