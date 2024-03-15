@@ -1,4 +1,4 @@
-from loan_calc import calculate_monthly_payment, loan_schedule
+from loan_calc import calculate_monthly_payment, loan_schedule, loan_summary
 from pytest import approx
 import numpy_financial as npf
 
@@ -41,3 +41,31 @@ def test_loan_schedule():
     assert (
         last_month.remaining_balance == 0.0
     ), "Loan should be fully paid off by last month"
+
+def test_loan_summary():
+    test_cases = [
+        {
+            'amount': 100000,
+            'annual_interest_rate': 5,
+            'loan_term_months': 12,
+            'month': 6,
+            'expected': {
+                'current_principal_balance': 50623.66,
+                'total_principal_paid': 49376.33,
+                'total_interest_paid': 1988.15,
+            }
+
+        },
+    ]
+
+    for case in test_cases:
+        summary = loan_summary(
+            amount=case["amount"],
+            annual_interest_rate=case["annual_interest_rate"],
+            loan_term_months=case["loan_term_months"],
+            month=case["month"],
+        )
+
+        assert summary.current_principal_balance == approx(case["expected"]["current_principal_balance"], abs=0.01), 'Current principal balance does not match expected'
+        assert summary.total_principal_paid == approx(case["expected"]["total_principal_paid"], abs=0.01), 'Total principal balance does not match expected'
+        assert summary.total_interest_paid == approx(case["expected"]["total_interest_paid"], abs=0.01), 'Total interest paid does not match expected'
