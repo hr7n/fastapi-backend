@@ -1,14 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
+from typing import List
 from database import engine, get_session
 from sqlmodel import SQLModel, Session
-from models import User, Loan
+from models import User, Loan, LoanSchedule, LoanSummary
+from loan_calc import loan_schedule, loan_summary as generate_loan_summary
 
 app = FastAPI()
 
-
-# @app.get("/")
-# async def read_root():
-#     return {"message": "Test"}
 
 ## Users
 
@@ -19,6 +17,7 @@ def create_user(user: User, db: Session = Depends(get_session)):
     db.commit()
     db.refresh(user)
     return user
+
 
 
 @app.get("/users/{user_id}", response_model=User)
@@ -69,6 +68,40 @@ def read_loan(loan_id: int, db: Session = Depends(get_session)):
     if not loan:
         raise HTTPException(status_code=404, detail="Loan not found")
     return loan
+
+
+@app.get(
+    "/loans/{loan_id}/schedule",
+    response_model=List[LoanSchedule],
+)
+def get_loan_schedule(loan_id: int, db: Session = Depends(get_session)):
+    loan = db.get(Loan, loan_id)
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+    schedule = loan_schedule(
+        loan.amount, loan.annual_interest_rate, loan.loan_term_months
+    )
+
+    return schedule
+
+
+@app.get(
+    "/loans/{loan_id}/summary/{month}",
+    response_model=LoanSummary,
+)
+def get_loan_summary(month: int, loan_id: int, db: Session = Depends(get_session)):
+    loan = db.get(Loan, loan_id)
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+
+    try:
+        summary = generate_loan_summary(
+            loan.amount, loan.annual_interest_rate, loan.loan_term_months, month
+        )
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+    return summary
+
 
 
 def create_db():

@@ -16,3 +16,14 @@ class Loan(SQLModel, table=True):
     annual_interest_rate: float
     loan_term_months: int
     owner: User = Relationship(back_populates="loans")
+
+
+class LoanSchedule(SQLModel):
+    month: int
+    remaining_balance: float
+    monthly_payment: float
+
+class LoanSummary(SQLModel):
+    total_principal_paid: float
+    total_interest_paid: float
+    current_principal_balance: float

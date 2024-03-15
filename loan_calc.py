@@ -1,4 +1,5 @@
 import numpy_financial as npf
+from models import LoanSchedule, LoanSummary
 
 
 def calculate_monthly_payment(
@@ -9,7 +10,9 @@ def calculate_monthly_payment(
     return monthly_pmt
 
 
-def loan_schedule(amount: float, annual_interest_rate: float, loan_term_months: int):
+def loan_schedule(
+    amount: float, annual_interest_rate: float, loan_term_months: int
+) -> list:
     monthly_interest_rate = (annual_interest_rate / 100) / 12
     monthly_pmt = -npf.pmt(monthly_interest_rate, loan_term_months, amount)
     remaining_balance = amount
@@ -25,22 +28,48 @@ def loan_schedule(amount: float, annual_interest_rate: float, loan_term_months: 
             remaining_balance = 0.0
 
         schedule.append(
-            {
-                "month": month,
-                "remaining_balance": remaining_balance,
-                "monthly_payment": monthly_pmt,
-            }
+            LoanSchedule(
+                month=month,
+                remaining_balance=remaining_balance,
+                monthly_payment=monthly_pmt,
+            )
+
         )
 
         if remaining_balance <= 0:
             break
+
     return schedule
 
 
-amount = 100000
-annual_interest_rate = 5
-loan_term_months = 360
+def loan_summary(
+    amount: float, annual_interest_rate: float, loan_term_months: int, month: int
+) -> LoanSummary:
+    if month < 1 or month > loan_term_months:
+        raise ValueError("Invalid month number")
 
-schedule = loan_schedule(amount, annual_interest_rate, loan_term_months)
-for payment_info in schedule[:12]:
-    print(payment_info)
+    monthly_interest_rate = (annual_interest_rate / 100) / 12
+    monthly_pmt = -npf.pmt(monthly_interest_rate, loan_term_months, amount)
+    total_interest_paid = 0.0
+    total_principal_paid = 0.0
+    remaining_balance = amount
+
+    for m in range(1, month + 1):
+        interest_pmt = remaining_balance * monthly_interest_rate
+        principal_pmt = monthly_pmt - interest_pmt
+        remaining_balance -= principal_pmt
+
+        total_principal_paid += principal_pmt
+        total_interest_paid += interest_pmt
+
+        if remaining_balance <= 0:
+            break
+
+    current_principal_balance = max(remaining_balance, 0.0)
+
+
+    return LoanSummary(
+        current_principal_balance=current_principal_balance,
+        total_principal_paid=total_principal_paid,
+        total_interest_paid=total_interest_paid,
+    )
