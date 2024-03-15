@@ -7,10 +7,9 @@ from loan_calc import loan_schedule, loan_summary as generate_loan_summary
 
 app = FastAPI()
 
-
 ## Users
 
-
+# Create user
 @app.post("/users/", response_model=User)
 def create_user(user: User, db: Session = Depends(get_session)):
     db.add(user)
@@ -19,7 +18,7 @@ def create_user(user: User, db: Session = Depends(get_session)):
     return user
 
 
-
+# Get user by id
 @app.get("/users/{user_id}", response_model=User)
 def read_user(user_id: int, db: Session = Depends(get_session)):
     user = db.get(User, user_id)
@@ -27,7 +26,7 @@ def read_user(user_id: int, db: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-
+# Update user by id
 @app.put("/users/{user_id}", response_model=User)
 def update_user(user_id: int, user_update: User, db: Session = Depends(get_session)):
     db_user = db.get(User, user_id)
@@ -40,7 +39,7 @@ def update_user(user_id: int, user_update: User, db: Session = Depends(get_sessi
         db.refresh(db_user)
         return db_user
 
-
+# Delete user
 @app.delete("/users/{user_id}", response_model=User)
 def delete_user(user_id: int, db: Session = Depends(get_session)):
     db_user = db.get(User, user_id)
@@ -53,7 +52,7 @@ def delete_user(user_id: int, db: Session = Depends(get_session)):
 
 ## Loans
 
-
+# Create loan
 @app.post("/loans/", response_model=Loan)
 def create_loan(loan: Loan, db: Session = Depends(get_session)):
     db.add(loan)
@@ -61,7 +60,7 @@ def create_loan(loan: Loan, db: Session = Depends(get_session)):
     db.refresh(loan)
     return loan
 
-
+# Get loan by id
 @app.get("/loans/{loan_id}", response_model=Loan)
 def read_loan(loan_id: int, db: Session = Depends(get_session)):
     loan = db.get(Loan, loan_id)
@@ -69,7 +68,7 @@ def read_loan(loan_id: int, db: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Loan not found")
     return loan
 
-
+# Get loan schedule
 @app.get(
     "/loans/{loan_id}/schedule",
     response_model=List[LoanSchedule],
@@ -84,7 +83,7 @@ def get_loan_schedule(loan_id: int, db: Session = Depends(get_session)):
 
     return schedule
 
-
+# Get loan summary
 @app.get(
     "/loans/{loan_id}/summary/{month}",
     response_model=LoanSummary,
@@ -102,6 +101,7 @@ def get_loan_summary(month: int, loan_id: int, db: Session = Depends(get_session
         raise HTTPException(status_code=400, detail=str(err))
     return summary
 
+# Get user loans
 @app.get('/users/{user_id}/loans', response_model=List[Loan])
 def get_user_loans(user_id: int, db: Session = Depends(get_session)):
     user = db.get(User, user_id)
@@ -109,6 +109,7 @@ def get_user_loans(user_id: int, db: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return user.loans
 
+# Share loan with another user
 @app.post('/loans/{loan_id}/share/{user_id}')
 def share_loan_with_user(loan_id: int, user_id: int, db: Session = Depends(get_session)):
     loan = db.get(Loan, loan_id)
@@ -129,6 +130,7 @@ def share_loan_with_user(loan_id: int, user_id: int, db: Session = Depends(get_s
 
     return {"message": "Loan shared successfully"}
 
+# Get users for loan
 @app.get('/loans/{loan_id}/users', response_model=List[User])
 def get_users_for_loan(loan_id: int, db: Session = Depends(get_session)):
     loan = db.get(Loan, loan_id)
