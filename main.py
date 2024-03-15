@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from typing import List
 from database import engine, get_session
 from sqlmodel import SQLModel, Session
-from models import User, Loan, LoanSchedule, LoanSummary
+from models import User, Loan, LoanSchedule, LoanSummary, UserLoanLink
 from loan_calc import loan_schedule, loan_summary as generate_loan_summary
 
 app = FastAPI()
@@ -109,6 +109,25 @@ def get_user_loans(user_id: int, db: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return user.loans
 
+@app.post('/loans/{loan_id}/share/{user_id}')
+def share_loan_with_user(loan_id: int, user_id: int, db: Session = Depends(get_session)):
+    loan = db.get(Loan, loan_id)
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+    
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    existing_link = db.query(UserLoanLink).filter(UserLoanLink.user_id == user.id, UserLoanLink.loan_id == loan.id).first()
+    if existing_link:
+        raise HTTPException(status_code=404, detail="Loan already shared with this user")
+
+    new_link = UserLoanLink(user_id=user_id, loan_id=loan_id)
+    db.add(new_link)
+    db.commit()
+
+    return {"message": "Loan shared successfully"}
 
 
 def create_db():
