@@ -19,6 +19,8 @@ REST API developed with FastAPI for a Loan Amortization app, designed to manage 
 
 - `uvicorn main:app`
 
+  This will start the server on `http://127.0.0.1:8000`
+
 ## Dependencies
 
 This project uses the following major dependencies:
