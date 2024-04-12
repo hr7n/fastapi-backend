@@ -17,7 +17,7 @@ REST API developed with FastAPI for a Loan Amortization app, designed to manage 
 
 3. Run the application:
 
-- `uvicorn main:app --reload`
+- `uvicorn main:app`
 
 ## Dependencies
 
