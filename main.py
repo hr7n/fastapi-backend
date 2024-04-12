@@ -56,6 +56,11 @@ def delete_user(user_id: int, db: Session = Depends(get_session)):
 @app.post("/loans/", response_model=Loan)
 def create_loan(loan: Loan, db: Session = Depends(get_session)):
     db.add(loan)
+    db.flush()
+
+    new_link = UserLoanLink(user_id=loan.user_id, loan_id=loan.id)
+    db.add(new_link)
+
     db.commit()
     db.refresh(loan)
     return loan
@@ -104,10 +109,11 @@ def get_loan_summary(month: int, loan_id: int, db: Session = Depends(get_session
 # Get user loans
 @app.get('/users/{user_id}/loans', response_model=List[Loan])
 def get_user_loans(user_id: int, db: Session = Depends(get_session)):
-    user = db.get(User, user_id)
-    if not user: 
-        raise HTTPException(status_code=404, detail="User not found")
-    return user.loans
+    loans  = db.query(Loan).join(UserLoanLink, UserLoanLink.loan_id == Loan.id).join(User, UserLoanLink.user_id == User.id).filter(User.id == user_id).all()
+
+    if not loans:
+        raise HTTPException(status_code=404, detail="No loans found for this user")
+    return loans
 
 # Share loan with another user
 @app.post('/loans/{loan_id}/share/{user_id}')
