@@ -1,4 +1,3 @@
-# import numpy_financial as npf
 from models import LoanSchedule, LoanSummary
 
 
@@ -6,7 +5,6 @@ def calculate_monthly_payment(
     amount: float, annual_interest_rate: float, loan_term_months: int
 ) -> float:
     monthly_interest_rate = (annual_interest_rate / 100) / 12
-    # monthly_pmt = -npf.pmt(monthly_interest_rate, loan_term_months, amount)
     monthly_payment = amount  * (monthly_interest_rate * (1 + monthly_interest_rate) ** loan_term_months) / ((1 + monthly_interest_rate) ** loan_term_months - 1)
     return monthly_payment
 
@@ -15,7 +13,6 @@ def loan_schedule(
     amount: float, annual_interest_rate: float, loan_term_months: int
 ) -> list:
     monthly_interest_rate = (annual_interest_rate / 100) / 12
-    # monthly_pmt = -npf.pmt(monthly_interest_rate, loan_term_months, amount)
     monthly_pmt = calculate_monthly_payment(amount, annual_interest_rate, loan_term_months)
     remaining_balance = amount
     schedule = []

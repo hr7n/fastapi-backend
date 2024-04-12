@@ -1,6 +1,5 @@
 from loan_calc import calculate_monthly_payment, loan_schedule, loan_summary
 from pytest import approx
-# import numpy_financial as npf
 
 
 def test_calculate_monthly_payment():
@@ -19,7 +18,6 @@ def test_loan_schedule():
     loan_term_months = 360
 
     monthly_interest_rate = (annual_interest_rate / 100) / 12
-    # expected_monthly_pmt = -npf.pmt(monthly_interest_rate, loan_term_months, amount)
     expected_monthly_pmt = amount  * (monthly_interest_rate * (1 + monthly_interest_rate) ** loan_term_months) / ((1 + monthly_interest_rate) ** loan_term_months - 1)
     schedule = loan_schedule(amount, annual_interest_rate, loan_term_months)
 
