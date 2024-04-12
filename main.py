@@ -1,11 +1,17 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import RedirectResponse
 from typing import List
 from database import engine, get_session
 from sqlmodel import SQLModel, Session
 from models import User, Loan, LoanSchedule, LoanSummary, UserLoanLink
 from loan_calc import loan_schedule, loan_summary as generate_loan_summary
 
+
 app = FastAPI()
+
+@app.get('/', include_in_schema=False)
+def redirect_to_docs():
+    return RedirectResponse(url='/docs')
 
 ## Users
 
