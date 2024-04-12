@@ -10,7 +10,7 @@ app = FastAPI()
 ## Users
 
 # Create user
-@app.post("/users/", response_model=User)
+@app.post("/users/", response_model=User, status_code=201)
 def create_user(user: User, db: Session = Depends(get_session)):
     db.add(user)
     db.commit()
@@ -40,20 +40,19 @@ def update_user(user_id: int, user_update: User, db: Session = Depends(get_sessi
         return db_user
 
 # Delete user
-@app.delete("/users/{user_id}", response_model=User)
+@app.delete("/users/{user_id}", status_code=204)
 def delete_user(user_id: int, db: Session = Depends(get_session)):
     db_user = db.get(User, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(db_user)
     db.commit()
-    return db_user
 
 
 ## Loans
 
 # Create loan
-@app.post("/loans/", response_model=Loan)
+@app.post("/loans/", response_model=Loan, status_code=201)
 def create_loan(loan: Loan, db: Session = Depends(get_session)):
     db.add(loan)
     db.flush()
@@ -128,7 +127,7 @@ def share_loan_with_user(loan_id: int, user_id: int, db: Session = Depends(get_s
 
     existing_link = db.query(UserLoanLink).filter(UserLoanLink.user_id == user.id, UserLoanLink.loan_id == loan.id).first()
     if existing_link:
-        raise HTTPException(status_code=404, detail="Loan already shared with this user")
+        raise HTTPException(status_code=400, detail="Loan already shared with this user")
 
     new_link = UserLoanLink(user_id=user_id, loan_id=loan_id)
     db.add(new_link)
