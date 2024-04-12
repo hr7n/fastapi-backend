@@ -4,14 +4,30 @@
 
 REST API developed with FastAPI for a Loan Amortization app, designed to manage users and their loans.
 
+## Installation
+
+1. Clone the repository:
+
+- `git clone https://github.com/hr7n/fastapi-backend`
+- `cd fastapi-backend`
+
+2. Install the required dependencies:
+
+- `pip install -r requirements.txt`
+
+3. Run the application:
+
+- `uvicorn main:app --reload`
+
 ## Dependencies
 
-- Python
-- FastAPI
-- SQLModel
-- SQLite
-- numpy_financial
-- pytest
+This project uses the following major dependencies:
+
+- **FastAPI**: For creating the REST API.
+- **SQLModel**: For ORM operations with SQLite database.
+- **SQLite**: Used as the database engine, compatible with version 3.39.5 or higher.
+- **Uvicorn**: As the ASGI server to run FastAPI.
+- **Pytest**: For running tests.
 
 ## Usage
 
@@ -33,6 +49,9 @@ Additional endpoints:
 - `GET /loans/{loan_id}/users: List all users associated with a loan.`
 
 ## Tests
+
+To run the tests, execute:
+`pytest`
 
 - `test_calculate_monthly_payment:`
   - This test verifies the calculate_monthly_payment function. It uses predefined test cases that include loan amounts, annual interest rates, loan terms (in months), and the expected monthly payment.
