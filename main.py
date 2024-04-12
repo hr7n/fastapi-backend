@@ -150,11 +150,6 @@ def get_users_for_loan(loan_id: int, db: Session = Depends(get_session)):
 
     return users
 
-    # user_links = db.query(UserLoanLink).filter(UserLoanLink.loan_id == loan.id).all()
-    # user_ids = [link.user_id for link in user_links]
-    # users = db.query(User).filter(User.id.in_(user_ids)).all()
-    # return users
-
 def create_db():
     SQLModel.metadata.create_all(engine)
 
